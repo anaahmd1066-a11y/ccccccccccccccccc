@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Home, Trophy, Calendar, BookOpen } from 'lucide-react';
+import { Home, Trophy, Calendar, BookOpen, Megaphone, Heart } from 'lucide-react';
 
 interface NavigationProps {
-  currentPage: 'main' | 'results' | 'schedule';
-  onNavigate: (page: 'main' | 'results' | 'schedule') => void;
+  currentPage: 'main' | 'results' | 'schedule' | 'news' | 'donation';
+  onNavigate: (page: 'main' | 'results' | 'schedule' | 'news' | 'donation') => void;
   isDarkMode?: boolean;
 }
 
@@ -51,6 +51,20 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate,
       icon: Trophy,
       gradient: 'from-purple-500 to-pink-600',
       hoverGradient: 'hover:from-purple-600 hover:to-pink-700'
+    },
+    {
+      id: 'news',
+      label: 'آخر الأخبار',
+      icon: Megaphone,
+      gradient: 'from-orange-500 to-red-600',
+      hoverGradient: 'hover:from-orange-600 hover:to-red-700'
+    },
+    {
+      id: 'donation',
+      label: 'التبرعات',
+      icon: Heart,
+      gradient: 'from-red-500 to-pink-600',
+      hoverGradient: 'hover:from-red-600 hover:to-pink-700'
     }
   ];
 
@@ -97,7 +111,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate,
             return (
               <button
                 key={item.id}
-                onClick={() => onNavigate(item.id as 'main' | 'results' | 'schedule')}
+                onClick={() => onNavigate(item.id as 'main' | 'results' | 'schedule' | 'news' | 'donation')}
                 className={`
                   group relative px-6 py-3 rounded-xl font-semibold text-sm md:text-base
                   transition-all duration-300 transform hover:scale-105 hover:-translate-y-1

@@ -4,6 +4,8 @@ import { Header } from './components/Header';
 import { MainPage } from './components/MainPage';
 import { Navigation } from './components/Navigation';
 import { ExamSchedule } from './components/ExamSchedule';
+import { NewsPage } from './components/NewsPage';
+import { DonationSection } from './components/DonationSection';
 import { SearchSection } from './components/SearchSection';
 import { ResultCard } from './components/ResultCard';
 import { StatsSection } from './components/StatsSection';
@@ -17,7 +19,7 @@ import { Student } from './types';
 function App() {
   const [searchResult, setSearchResult] = useState<Student | null>(null);
   const [searchAttempted, setSearchAttempted] = useState(false);
-  const [currentPage, setCurrentPage] = useState<'main' | 'results' | 'schedule'>('main');
+  const [currentPage, setCurrentPage] = useState<'main' | 'results' | 'schedule' | 'news' | 'donation'>('main');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   
@@ -42,11 +44,11 @@ function App() {
     setSearchAttempted(true);
   };
 
-  const handleNavigation = (page: 'results' | 'schedule') => {
+  const handleNavigation = (page: 'results' | 'schedule' | 'news' | 'donation') => {
     setCurrentPage(page);
   };
 
-  const handleFullNavigation = (page: 'main' | 'results' | 'schedule') => {
+  const handleFullNavigation = (page: 'main' | 'results' | 'schedule' | 'news' | 'donation') => {
     setCurrentPage(page);
     
     // Stop audio when navigating away from main page
@@ -94,7 +96,7 @@ function App() {
           
           <Navigation currentPage={currentPage} onNavigate={handleFullNavigation} isDarkMode={isDarkMode} />
           
-          {currentPage === 'results' ? (
+          {currentPage === 'results' && (
             <>
               <SearchSection 
                 students={rankedStudents} 
@@ -163,8 +165,18 @@ function App() {
               <StatsSection stats={stats} isDarkMode={isDarkMode} />
               <AllResultsSection students={rankedStudents} isDarkMode={isDarkMode} />
             </>
-          ) : (
+          )}
+          
+          {currentPage === 'schedule' && (
             <ExamSchedule isDarkMode={isDarkMode} />
+          )}
+          
+          {currentPage === 'news' && (
+            <NewsPage isDarkMode={isDarkMode} />
+          )}
+          
+          {currentPage === 'donation' && (
+            <DonationSection isDarkMode={isDarkMode} />
           )}
           
           <Footer isDarkMode={isDarkMode} />

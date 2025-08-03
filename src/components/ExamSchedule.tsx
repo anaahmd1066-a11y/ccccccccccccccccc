@@ -22,10 +22,8 @@ export const ExamSchedule: React.FC<ExamScheduleProps> = ({ isDarkMode = false }
   // حساب التواريخ بناءً على الجمعة القادمة
   const getNextFriday = () => {
     const today = new Date();
-    const dayOfWeek = today.getDay();
-    const daysUntilFriday = (5 - dayOfWeek + 7) % 7 || 7;
-    const nextFriday = new Date(today);
-    nextFriday.setDate(today.getDate() + daysUntilFriday);
+    // Set to a specific date in 2025 for the competition
+    const nextFriday = new Date('2025-02-14'); // Friday, February 14, 2025
     return nextFriday;
   };
 
@@ -36,18 +34,18 @@ export const ExamSchedule: React.FC<ExamScheduleProps> = ({ isDarkMode = false }
     
     // التواريخ الهجرية المحددة مسبقاً
     const hijriDates = [
-      'الجمعة، ١٤ صفر ١٤٤٧ هـ',
-      'السبت، ١٥ صفر ١٤٤٧ هـ', 
-      'الجمعة، ٢١ صفر ١٤٤٧ هـ',
-      'السبت، ٢٢ صفر ١٤٤٧ هـ'
+      'الجمعة، ١٦ رجب ١٤٤٦ هـ',
+      'السبت، ١٧ رجب ١٤٤٦ هـ', 
+      'الجمعة، ٢٣ رجب ١٤٤٦ هـ',
+      'السبت، ٢٤ رجب ١٤٤٦ هـ'
     ];
     
     // التواريخ الميلادية المقابلة
     const gregorianDates = [
-      'الجمعة، ١٦ أغسطس ٢٠٢٤ م',
-      'السبت، ١٧ أغسطس ٢٠٢٤ م',
-      'الجمعة، ٢٣ أغسطس ٢٠٢٤ م', 
-      'السبت، ٢٤ أغسطس ٢٠٢٤ م'
+      'الجمعة، ١٤ فبراير ٢٠٢٥ م',
+      'السبت، ١٥ فبراير ٢٠٢٥ م',
+      'الجمعة، ٢١ فبراير ٢٠٢٥ م', 
+      'السبت، ٢٢ فبراير ٢٠٢٥ م'
     ];
     
     return {
@@ -118,16 +116,16 @@ export const ExamSchedule: React.FC<ExamScheduleProps> = ({ isDarkMode = false }
           const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
           if (days > 0) {
-            newTimeLeft[event.id] = `${days} يوم و ${hours} ساعة`;
+            newTimeLeft[event.id] = `${days} يوم، ${hours} ساعة، ${minutes} دقيقة`;
           } else if (hours > 0) {
-            newTimeLeft[event.id] = `${hours} ساعة و ${minutes} دقيقة`;
+            newTimeLeft[event.id] = `${hours} ساعة، ${minutes} دقيقة، ${seconds} ثانية`;
           } else if (minutes > 0) {
-            newTimeLeft[event.id] = `${minutes} دقيقة و ${seconds} ثانية`;
+            newTimeLeft[event.id] = `${minutes} دقيقة، ${seconds} ثانية`;
           } else {
             newTimeLeft[event.id] = `${seconds} ثانية`;
           }
         } else {
-          newTimeLeft[event.id] = 'انتهى الوقت';
+          newTimeLeft[event.id] = '🎉 بدأ الاختبار!';
         }
       });
 
@@ -147,10 +145,31 @@ export const ExamSchedule: React.FC<ExamScheduleProps> = ({ isDarkMode = false }
 
   const getUrgencyClass = (eventId: number) => {
     const timeString = timeLeft[eventId];
-    if (!timeString || timeString === 'انتهى الوقت') return 'text-red-600 animate-pulse';
-    if (timeString.includes('يوم') && parseInt(timeString) <= 2) return 'text-orange-600 animate-bounce';
-    if (timeString.includes('ساعة') && !timeString.includes('يوم')) return 'text-red-600 animate-pulse';
-    return 'text-green-600';
+    if (!timeString || timeString.includes('بدأ الاختبار')) {
+      return 'text-green-600 animate-pulse font-bold text-xl';
+    }
+    
+    const days = parseInt(timeString);
+    if (timeString.includes('يوم')) {
+      if (days <= 1) return 'text-red-600 animate-pulse font-bold';
+      if (days <= 3) return 'text-orange-600 animate-bounce font-semibold';
+      if (days <= 7) return 'text-yellow-600 font-semibold';
+      return 'text-green-600 font-medium';
+    }
+    
+    if (timeString.includes('ساعة') && !timeString.includes('يوم')) {
+      return 'text-red-600 animate-pulse font-bold';
+    }
+    
+    if (timeString.includes('دقيقة') && !timeString.includes('ساعة')) {
+      return 'text-red-700 animate-pulse font-bold text-lg';
+    }
+    
+    if (timeString.includes('ثانية') && !timeString.includes('دقيقة')) {
+      return 'text-red-800 animate-pulse font-bold text-xl';
+    }
+    
+    return 'text-green-600 font-medium';
   };
 
   return (
@@ -252,18 +271,48 @@ export const ExamSchedule: React.FC<ExamScheduleProps> = ({ isDarkMode = false }
                     {/* Countdown */}
                     <div className={`p-4 rounded-xl transition-colors duration-300 ${
                       isDarkMode 
-                        ? 'bg-gradient-to-r from-gray-600 to-gray-500' 
-                        : 'bg-gradient-to-r from-gray-50 to-blue-50'
+                        ? 'bg-gradient-to-r from-gray-800 to-gray-700 border border-gray-600' 
+                        : 'bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200'
                     }`}>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Clock className="w-5 h-5 text-blue-600 animate-tick" />
                           <span className={`font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>الوقت المتبقي:</span>
                         </div>
-                        <div className={`text-xl font-bold ${getUrgencyClass(event.id)}`}>
+                        <div className={`${getUrgencyClass(event.id)} transition-all duration-300`}>
                           {timeLeft[event.id] || 'جاري الحساب...'}
                         </div>
                       </div>
+                      
+                      {/* Progress bar for visual countdown */}
+                      {timeLeft[event.id] && !timeLeft[event.id].includes('بدأ الاختبار') && (
+                        <div className="mt-3">
+                          <div className={`w-full h-2 rounded-full overflow-hidden ${
+                            isDarkMode ? 'bg-gray-600' : 'bg-gray-200'
+                          }`}>
+                            <div 
+                              className={`h-full transition-all duration-1000 ${
+                                timeLeft[event.id].includes('ثانية') && !timeString.includes('دقيقة') 
+                                  ? 'bg-gradient-to-r from-red-500 to-red-600 animate-pulse' 
+                                  : timeLeft[event.id].includes('دقيقة') && !timeString.includes('ساعة')
+                                  ? 'bg-gradient-to-r from-orange-500 to-red-500'
+                                  : timeLeft[event.id].includes('ساعة') && !timeString.includes('يوم')
+                                  ? 'bg-gradient-to-r from-yellow-500 to-orange-500'
+                                  : 'bg-gradient-to-r from-green-500 to-blue-500'
+                              }`}
+                              style={{ 
+                                width: timeLeft[event.id].includes('ثانية') && !timeString.includes('دقيقة') 
+                                  ? '10%' 
+                                  : timeLeft[event.id].includes('دقيقة') && !timeString.includes('ساعة')
+                                  ? '25%'
+                                  : timeLeft[event.id].includes('ساعة') && !timeString.includes('يوم')
+                                  ? '50%'
+                                  : '100%'
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
